@@ -32,13 +32,16 @@ class KMeans:
         This process is repeated until a maximum number of iterations is reached.
         """
         if len(X) <= self.n * 2:
-            raise ValueError
+            raise ValueError('Not enough data points for the number of clusters')
             #return 'Need more data points'
         rng = np.random.default_rng(0)
+        #selects random points for initial clusters
         while len(np.unique(self.centroids)) < self.n:
-            self.centroids = X[rng.integers(0,len(X) + 1,self.n)]
+            self.centroids = X[rng.integers(0,len(X), self.n)]
         max_iter = 0
+        # Core loop for updating the clusters and centroids
         while max_iter < self.max_iter:
+            # Create empty clusters 
             self.clusters = [[] for i in range(self.n)]
             for feature in X:
                 min_dist = np.inf
@@ -53,15 +56,20 @@ class KMeans:
         self.centroids = np.array(self.centroids)
 
             
-    def get_inertia(self):
+    def calculate_inertia(self):
+        '''
+        not used !
+        '''
         total = 0
         i = 0
         for centroid in self.centroids:
             for cluster in self.clusters:
-                for point in cluster:
-                    total += np.sqrt(np.sum(np.power(point - centroid,2)))
-                    i += 1
-        self.inertia = total / i
+                total += np.sum(np.power(centroid - cluster,2))
+                i += 1
+        if i > 0:
+            self.inertia = total / i
+        else:
+            self.inertia = 0
         return self.inertia
 
     def predict(self,X):
